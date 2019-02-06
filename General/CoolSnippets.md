@@ -92,3 +92,29 @@ To get a specific icon, use `#iconNamed:` method as follow:
 ```
 Smalltalk ui icons iconNamed: #arrowUp
 ```
+
+## Rename programatically methods
+
+In this section we'll present a snippet of code to rename all the methods of a class containing a substring to replace it by another substring. 
+
+```Smalltalk
+"Class in which we want to rename the methods"
+class := EpApplyPreviewerTest.
+"Substring to replace"
+from := 'With'.
+"Substring to use"
+to := 'Without'.
+
+class methods
+	select: [ :method | method selector includesSubstring: from ]
+	thenDo: [ :method | 
+		| permutationMap |
+		"We want to keep the arguments in the same order"
+		permutationMap := method numArgs = 0 ifTrue: [ #() ] ifFalse: [ (1 to: method numArgs) asArray ].
+		
+		(RBRenameMethodRefactoring
+			renameMethod: method selector
+			in: class
+			to: (method selector copyReplaceAll: from with: to)
+			permutation: permutationMap) execute ]
+```
