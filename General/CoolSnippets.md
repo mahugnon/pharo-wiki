@@ -171,14 +171,24 @@ If you want to use an image into Pharo, you will need to import it
 ```Smalltalk
 ImageReadWriter formFromFileNamed: 'test.png'
 ```
-and probably to store it into the image for further reuse. It is achieved by encoding the image into a base 64 String. Then, the String can be stored in a method.
+and probably to store it into the image for further reuse. It is achieved by encoding the image into a base 64 String. Then, the String can be stored in a method. Let's store  the image String in `Foo>>#imageString`.
 ```Smalltalk
-(Base64MimeConverter mimeEncode: 'test.png' asFileReference binaryReadStream) contents
+Foo compile: 'imageString
+^''',
+(Base64MimeConverter mimeEncode: 'test.png' asFileReference binaryReadStream) contents,''' classified:'FooPackage'
 ```
-Let's say we stored the image base64 String in `Foo>>#image`. To materialize a Form from this image, you can do:
+ To materialize a Form from this image, you can do:
 ```Smalltalk
-Form fromBinaryStream: Foo image base64Decoded asByteArray readStream
+Form fromBinaryStream: Foo imageString base64Decoded asByteArray readStream
 ```
+We can also store the materialized Form from this image by doing:
+```Smalltalk
+Foo compile: 'image
+	^ Form fromBinaryStream: self imageString base64Decoded asByteArray readStream ' classified: 'FooPackage'
+```
+Execute:
+`Foo new image` to see the image in pharo
+
 Here is a shortcut available since Pharo 8.0:
 ```Smalltalk
 Form fromBase64String: Foo image
